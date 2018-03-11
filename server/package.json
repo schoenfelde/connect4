@@ -1,0 +1,31 @@
+{
+  "name": "connect4server",
+  "version": "1.0.0",
+  "description": "Connect 4",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/index.js --exec babel-node",
+    "test": "mocha \"src/**/*.test.js\" --recursive --compilers js:babel-register --watch",
+    "build": "babel src -d dist",
+    "serve": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schoenfelde/connect4.git"
+  },
+  "author": "schoenfelde",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/schoenfelde/connect4/issues"
+  },
+  "homepage": "https://github.com/schoenfelde/connect4#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
+    "mocha": "^5.0.4",
+    "nodemon": "^1.17.1"
+  }
+}
