@@ -76,6 +76,34 @@ describe('Game', function() {
       expect(game.winner).to.be.equal(1)
     })
 
+    it('should win with 4 in a row horizontally, with a middle connect 4', function (){
+      const game = new Game();
+      game.recordMove(5);
+      game.recordMove(1);
+      game.recordMove(2);
+      game.recordMove(2);
+      game.recordMove(3);
+      game.recordMove(3);
+      game.recordMove(4);
+      expect(game.winner).to.be.equal(1)
+    })
+
+    it('should win with 4 in a row horizontally, with an end connect 4', function (){
+      const game = new Game();
+      game.recordMove(7);
+      game.recordMove(1);
+      game.recordMove(2);
+      game.recordMove(2);
+      game.recordMove(3);
+      game.recordMove(3);
+      game.recordMove(4);
+      game.recordMove(4);
+      game.recordMove(5);
+      game.recordMove(5);
+      game.recordMove(6);
+      expect(game.winner).to.be.equal(1)
+    })
+
     it('should win with 4 in a row horizontally, player 2', function (){
       const game = new Game();
       game.recordMove(1);
@@ -90,8 +118,8 @@ describe('Game', function() {
       game.recordMove(4);
       expect(game.winner).to.be.equal(2)
     })
-    
-    it.skip('should win with 4 in a row vertically', function (){
+
+    it('should win with 4 in a row vertically', function (){
       const game = new Game();
       game.recordMove(1);
       game.recordMove(2);
@@ -99,6 +127,20 @@ describe('Game', function() {
       game.recordMove(2);
       game.recordMove(1);
       game.recordMove(3);
+      game.recordMove(1);
+      expect(game.winner).to.be.equal(1)
+    })
+
+    it('should win with 4 in a row vertically, middle of board', function (){
+      const game = new Game();
+      game.recordMove(2);
+      game.recordMove(1);
+      game.recordMove(1);
+      game.recordMove(2);
+      game.recordMove(1);
+      game.recordMove(3);
+      game.recordMove(1);
+      game.recordMove(2);
       game.recordMove(1);
       expect(game.winner).to.be.equal(1)
     })

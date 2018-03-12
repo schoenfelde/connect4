@@ -61,7 +61,7 @@ export default class Game {
     checkWinConditions() {
         const player1Moves = this._moveList.filter( x => x.player === 1);
         const player2Moves = this._moveList.filter( x => x.player === 2);
-        return ( this.checkHorizontalWin(player1Moves, player2Moves) || this.checkVerticalWin() || this.checkDiagonalWin() );
+        return ( this.checkHorizontalWin(player1Moves, player2Moves) || this.checkVerticalWin(player1Moves, player2Moves) || this.checkDiagonalWin() );
     }
 
     checkHorizontalWin(p1Moves, p2Moves) {
@@ -70,16 +70,17 @@ export default class Game {
 
     _checkRows(moves) {
         for ( let i = 0; i < this._rowCount; i++ ) {
-            //Get all players pieces on a row
+            //Get all players pieces on a column
             let sameRowPieces = moves.filter( x => x.row === i);
             if (sameRowPieces.length < 4)
-                continue
+            continue
             else {
-                sameRowPieces.sort(this._rowSorter)
+                sameRowPieces.sort(this._columnSorter)
                 for (let j = 0; j < sameRowPieces.length; j++){
                     if (j + 4 > sameRowPieces.length) 
-                            break;
+                    break;
                     else {
+                        // console.log(sameRowPieces)
                         if (sameRowPieces[j].column === sameRowPieces[j+1].column - 1  &&  sameRowPieces[j].column === sameRowPieces[j+2].column - 2 && sameRowPieces[j].column === sameRowPieces[j+3].column - 3){
                             return moves[0].player
                         }
@@ -94,8 +95,34 @@ export default class Game {
         return a.row > b.row ? 1 : (a.row < b.row ? -1 : 0)
     }
 
-    checkVerticalWin() {
+    checkVerticalWin(p1Moves, p2Moves) {
+        return this._checkColumns(p1Moves) || this._checkColumns(p2Moves);
+    }
 
+    _checkColumns(moves) {
+        for ( let i = 0; i < this._columnCount; i++ ) {
+            //Get all players pieces on a row
+            let sameColumnPieces = moves.filter( x => x.column === i);
+            if (sameColumnPieces.length < 4)
+                continue
+            else {
+                sameColumnPieces.sort(this._rowSorter)
+                for (let j = 0; j < sameColumnPieces.length; j++){
+                    if (j + 4 > sameColumnPieces.length) 
+                            break;
+                    else {
+                        if (sameColumnPieces[j].row === sameColumnPieces[j+1].row - 1  &&  sameColumnPieces[j].row === sameColumnPieces[j+2].row - 2 && sameColumnPieces[j].row === sameColumnPieces[j+3].row - 3){
+                            return moves[0].player
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    _columnSorter( a , b) {
+        return a.column > b.column ? 1 : (a.column < b.column ? -1 : 0)
     }
 
     checkDiagonalWin() {
