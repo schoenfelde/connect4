@@ -24,6 +24,21 @@ describe('Game', function() {
       expect(game.numberOfMoves()).to.equal(1);
     })
 
+    it('should be the correct player for 1 move', function() {
+      const game = new Game();
+      game.recordMove(2);
+      const player = game.getMoves()[0].player;
+      expect(player).to.equal(1);
+    })
+
+    it('should be the correct row and column for 2nd move', function() {
+      const game = new Game();
+      game.recordMove(2);
+      game.recordMove(2);
+      const move = game.getMoves()[1];
+      expect(move.row).to.be.equal(1);
+    })
+
     it('should not let you record a move more than the board width', function() {
       const game = new Game();
       expect( () => game.recordMove(8)).to.throw('Column 8 is not a valid move. Please select a column 1 - 7');
@@ -39,13 +54,79 @@ describe('Game', function() {
 
     it('should not allow more moves than possible', function() {
       const game = new Game();
-      const maxMoves = 7 * 6;
       for (let i = 0; i < 7; i++) {
         for ( let j = 0; j < 6; j++){
           game.recordMove(i+1);
         }
       }
       expect( () => game.recordMove(1)).to.throw('Game is finished, no more moves possible!');
+    })
+  })
+
+  describe('Game Win Conditions', function() {
+    it('should win with 4 in a row horizontally', function (){
+      const game = new Game();
+      game.recordMove(1);
+      game.recordMove(1);
+      game.recordMove(2);
+      game.recordMove(2);
+      game.recordMove(3);
+      game.recordMove(3);
+      game.recordMove(4);
+      expect(game.winner).to.be.equal(1)
+    })
+
+    it('should win with 4 in a row horizontally, player 2', function (){
+      const game = new Game();
+      game.recordMove(1);
+      game.recordMove(1);
+      game.recordMove(2);
+      game.recordMove(2);
+      game.recordMove(3);
+      game.recordMove(3);
+      game.recordMove(1);
+      game.recordMove(4);
+      game.recordMove(1);
+      game.recordMove(4);
+      expect(game.winner).to.be.equal(2)
+    })
+    
+    it.skip('should win with 4 in a row vertically', function (){
+      const game = new Game();
+      game.recordMove(1);
+      game.recordMove(2);
+      game.recordMove(1);
+      game.recordMove(2);
+      game.recordMove(1);
+      game.recordMove(3);
+      game.recordMove(1);
+      expect(game.winner).to.be.equal(1)
+    })
+
+    it.skip('should win with 4 in a row diagonally', function (){
+      const game = new Game();
+      game.recordMove(1);
+      game.recordMove(2);
+      game.recordMove(2);
+      game.recordMove(3);
+      game.recordMove(3);
+      game.recordMove(4);
+      game.recordMove(3);
+      game.recordMove(4);
+      game.recordMove(4);
+      game.recordMove(5);
+      game.recordMove(4);
+      expect(game.winner).to.be.equal(1)
+    })
+
+    it('should declare no winner when board is full', function (){
+      const game = new Game();
+      for (let i = 0; i < 7; i++) {
+        for ( let j = 0; j < 6; j++){
+          game.recordMove(i+1);
+        }
+      }
+      expect(game.isFinished()).to.be.equal(true)
     })
   })
 })
