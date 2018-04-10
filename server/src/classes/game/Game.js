@@ -169,22 +169,72 @@ export default class Game {
      * @param {*} moveList 
      * @param {*} direction 
      */
-    seeIfPieceIsTouching(move, moveList, direction) {
+    seeIfPieceIsTouching(moveList, direction) {
         //Avove means same column, but increasing row
-        const pieceAbove = moveList.filter( m => move.row === m.row + 1 && move.column === m.column);
-        const pieceRight = moveList.filter( m => move.row === m.row && move.column === m.column + 1);
-        const pieceDiagInc = moveList.filter( m => move.row === m.row + 1 && move.column === m.column + 1);
-        const pieceDiagDec = moveList.filter( m => move.row === m.row - 1 && move.column === m.column - 1);
+        // const pieceAbove = moveList.filter( m => move.row === m.row + 1 && move.column === m.column);
+        // const pieceRight = moveList.filter( m => move.row === m.row && move.column === m.column + 1);
+        // const pieceDiagInc = moveList.filter( m => move.row === m.row + 1 && move.column === m.column + 1);
+        // const pieceDiagDec = moveList.filter( m => move.row === m.row - 1 && move.column === m.column - 1);
 
-        if (pieceAbove.length > 0)
-            this.seeIfPieceIsTouching(pieceAbove[0], moveList.slice(pieceAbove[0]),'column');
-        if (pieceRight.length > 0)
-            this.seeIfPieceIsTouching(pieceRight[0], moveList.slice(pieceRight[0]),'row');
-        if (pieceDiagInc.length > 0)
-            this.seeIfPieceIsTouching(pieceDiagInc[0], moveList.slice(pieceDiagInc[0]),'diaginc');
-        if (pieceDiagDec.length > 0)
-            this.seeIfPieceIsTouching(pieceDiagDec[0], moveList.slice(pieceDiagDec[0]),'diagdec');
-        }
+        // if (pieceAbove.length > 0)
+        //     return this.seeIfPieceIsTouching(pieceAbove[0], moveList.slice(pieceAbove[0]),'column');
+        // else 
+        //     return count >= 4;
+        // if (pieceRight.length > 0)
+        //     return this.seeIfPieceIsTouching(pieceRight[0], moveList.slice(pieceRight[0]),'row');
+        // if (pieceDiagInc.length > 0)
+        //     return this.seeIfPieceIsTouching(pieceDiagInc[0], moveList.slice(pieceDiagInc[0]),'diaginc');
+        // if (pieceDiagDec.length > 0)
+        //     return this.seeIfPieceIsTouching(pieceDiagDec[0], moveList.slice(pieceDiagDec[0]),'diagdec');
+        
+        let firstMove = moveList[0];
+        let prevMove = firstMove;
+        let count = 1;
+        moveList.forEach( move => {
+            let pieceAbove = moveList.filter( m => move.row === m.row + 1 && move.column === m.column);
+            if (pieceAbove.length > 0)
+                count += 1;
+            else
+                count = 0;
+            
+        })
+    }   
+
+    getConnectingPieces(moveList) {
+        let inARow = 0,
+            inAColumn = 0,
+            inADiagInc = 0,
+            inADiagDec = 0;
+
+        const firstMove = moveList[0];
+        inARow = this.seeIfPieceIsTouching(firstMove, moveList, 'row');
+        inAColumn = this.seeIfPieceIsTouching(firstMove, moveList, 'column');
+        inADiagInc = this.seeIfPieceIsTouching(firstMove, moveList, 'diaginc');
+        inADiagDec = this.seeIfPieceIsTouching(firstMove, moveList, 'diagdec');
+
+        return Math.max(inARow, inAColumn, inADiagInc, inADiagDec);
+        
+    }
+
+    checkWinner() {
+        const player1Moves = this._moveList.filter( x => x.player === 1);
+        const player2Moves = this._moveList.filter( x => x.player === 2);
+        if (this.checkInARow(player1Moves))
+            return player1Moves[0].player;
+        if (this.checkInARow(player2Moves))
+            return player2Moves[0].player;
+            
+    }
+
+    checkInARow(moveList) {
+        if (this.notEnough(moveList)) return false;
+        const count = this.getConnectingPieces(moveList);
+    }
+
+    notEnough(moves) {
+        return (Array.isArray(moves) && moves.length > 4)
+    }
+
 
     _validateMove(column) {
         if (column < 1 || column > this._columnCount)
