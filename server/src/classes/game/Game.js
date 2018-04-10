@@ -61,7 +61,7 @@ export default class Game {
     checkWinConditions() {
         const player1Moves = this._moveList.filter( x => x.player === 1);
         const player2Moves = this._moveList.filter( x => x.player === 2);
-        return ( this.checkHorizontalWin(player1Moves, player2Moves) || this.checkVerticalWin(player1Moves, player2Moves) || this.checkDiagonalWin() );
+        return ( this.checkHorizontalWin(player1Moves, player2Moves) || this.checkVerticalWin(player1Moves, player2Moves) || this.checkDiagonalWin(player1Moves, player2Moves) );
     }
 
     checkHorizontalWin(p1Moves, p2Moves) {
@@ -69,26 +69,25 @@ export default class Game {
     }
 
     _checkRows(moves) {
-        for ( let i = 0; i < this._rowCount; i++ ) {
-            //Get all players pieces on a column
-            let sameRowPieces = moves.filter( x => x.row === i);
-            if (sameRowPieces.length < 4)
-            continue
-            else {
-                sameRowPieces.sort(this._columnSorter)
-                for (let j = 0; j < sameRowPieces.length; j++){
-                    if (j + 4 > sameRowPieces.length) 
-                    break;
-                    else {
-                        // console.log(sameRowPieces)
-                        if (sameRowPieces[j].column === sameRowPieces[j+1].column - 1  &&  sameRowPieces[j].column === sameRowPieces[j+2].column - 2 && sameRowPieces[j].column === sameRowPieces[j+3].column - 3){
-                            return moves[0].player
-                        }
-                    }
-                }
-            }
-        }
-        return false;
+        // for ( let i = 0; i < this._rowCount; i++ ) {
+        //     //Get all players pieces on a column
+        //     let sameRowPieces = moves.filter( x => x.row === i);
+        //     if (sameRowPieces.length < 4)
+        //     continue
+        //     else {
+        //         sameRowPieces.sort(this._columnSorter)
+        //         for (let j = 0; j < sameRowPieces.length; j++){
+        //             if (j + 4 > sameRowPieces.length) 
+        //             break;
+        //             else {
+        //                 if (sameRowPieces[j].column === sameRowPieces[j+1].column - 1  &&  sameRowPieces[j].column === sameRowPieces[j+2].column - 2 && sameRowPieces[j].column === sameRowPieces[j+3].column - 3){
+        //                     return moves[0].player
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        // return false;
     }
 
     _rowSorter( a , b) {
@@ -125,9 +124,67 @@ export default class Game {
         return a.column > b.column ? 1 : (a.column < b.column ? -1 : 0)
     }
 
-    checkDiagonalWin() {
-
+    checkDiagonalWin(p1Moves, p2Moves) {
+        //see if we have 4 pieces
+        //sort by column
+        //method to check step down or up
+        //piece === piece + x, piece + y
+        //piece === piece - x, piece - y
+        //see if multiple in a line
+        let countInARow = 1;
+        let increasing = true;
+        let prevMove = p1Moves[0];
+        p1Moves.sort(this._columnSorter);
+        console.log('p1Moves', p1Moves);
+        console.log('\n')
+        for (let i = 1; i < p1Moves.length; i++) {
+            let nextMove = p1Moves.filter( move => prevMove.row === move.row + 1 && prevMove.column === move.column + 1 )[0];
+            if (nextMove) {
+                if (increasing)
+                    countInARow += 1;
+                else {
+                    increasing = true;
+                    countInARow = 1;
+                }
+            }
+            else if(prevMove.row === p1Moves[i].row - 1 && prevMove.column === p1Moves[i].column - 1){
+                if (!increasing)
+                    countInARow += 1;
+                else {
+                    increasing = false
+                    countInARow = 1;
+                }
+            }
+            if (nextMove)
+            prevMove = p1Moves[i];
+            if (countInARow === 4)
+                return p1Moves[0].player;
+        }
+        return false;
     }
+
+    /**
+     * TODO figure out the count incremetor
+     * @param {} move 
+     * @param {*} moveList 
+     * @param {*} direction 
+     */
+    seeIfPieceIsTouching(move, moveList, direction) {
+        //Avove means same column, but increasing row
+        const pieceAbove = moveList.filter( m => move.row === m.row + 1 && move.column === m.column);
+        const pieceRight = moveList.filter( m => move.row === m.row && move.column === m.column + 1);
+        const pieceDiagInc = moveList.filter( m => move.row === m.row + 1 && move.column === m.column + 1);
+        const pieceDiagDec = moveList.filter( m => move.row === m.row - 1 && move.column === m.column - 1);
+
+        if (pieceAbove.length > 0)
+            this.seeIfPieceIsTouching(pieceAbove[0], moveList.slice(pieceAbove[0]),'column');
+        if (pieceRight.length > 0)
+            this.seeIfPieceIsTouching(pieceRight[0], moveList.slice(pieceRight[0]),'row');
+        if (pieceDiagInc.length > 0)
+            this.seeIfPieceIsTouching(pieceDiagInc[0], moveList.slice(pieceDiagInc[0]),'diaginc');
+        if (pieceDiagDec.length > 0)
+            this.seeIfPieceIsTouching(pieceDiagDec[0], moveList.slice(pieceDiagDec[0]),'diagdec');
+        }
 
     _validateMove(column) {
         if (column < 1 || column > this._columnCount)
@@ -145,7 +202,66 @@ export default class Game {
         return this._moveList.filter( x => x.column === column).length
     }
 
+    /**
+     * Check to see if the game is finished
+     */
     isFinished(){
         return this._isFinished;
     }
 }
+
+
+
+
+
+
+
+
+// /**
+//  *  REFACTOR
+//  * @param {} moves 
+//  * @param {*} vertical 
+//  */
+//     _checkLines(moves, direction) {
+//         const options = vertical ? this._columnCount : this._rowCount;
+//         const filterByField = vertical ? 'column' : 'row';
+//         for ( let i = 0; i < options; i++ ) {
+//             //Get all players pieces on a column
+//             let sameLinePieces = moves.filter( x => x.row === i);
+//             if (sameLinePieces.length < 4)
+//             continue
+//             else {
+//                 if (_checkIfPiecesAreConnected())
+//                     return moves[0].player
+//             }
+//                 }
+//        return false;
+//     }
+
+//     _checkIfPiecesAreConnected(moves, direction){
+//         let sortedMoves = [];
+//         let property = '';
+//         switch(direction) {
+//             case 'horizontal':
+//                 sortedMoves = moves.sort(this._rowSorter);
+//                 property = 'column';
+//                 break;
+//             case 'vertical':
+//                 sortedMoves = moves.sort(this._columnSorter);
+//                 property = 'row';
+//                 break;
+//             case 'diagonal':
+//                 sortedMoves = moves.sort(this._rowSorter);
+//                 property = 'row';
+//                 break;
+//             default:
+//                 break;
+//         }
+    
+//         for (let i = 0; i < sortedMoves.length; i++){
+            
+//         }
+
+//     }
+    
+//     //////////////////////////////////////////

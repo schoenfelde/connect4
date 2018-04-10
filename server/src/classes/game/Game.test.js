@@ -145,7 +145,7 @@ describe('Game', function() {
       expect(game.winner).to.be.equal(1)
     })
 
-    it.skip('should win with 4 in a row diagonally', function (){
+    it.only('should win with 4 in a row diagonally', function (){
       const game = new Game();
       game.recordMove(1);
       game.recordMove(2);
@@ -155,6 +155,8 @@ describe('Game', function() {
       game.recordMove(4);
       game.recordMove(3);
       game.recordMove(4);
+      game.recordMove(4);
+      game.recordMove(5);
       game.recordMove(4);
       game.recordMove(5);
       game.recordMove(4);
